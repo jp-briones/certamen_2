@@ -1,0 +1,37 @@
+name: certamen_2
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flex_color_scheme: ^8.0.1
+  firebase_core: ^3.8.0
+  cloud_firestore: ^5.5.0
+  firebase_auth: ^5.3.3
+  flutter_map: ^3.0.0
+  latlong2: ^0.8.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - lib/assets/images/whats.png
+    - lib/assets/images/cbb_logo.png
+    - lib/assets/images/fondo_home.jpg
+    - lib/assets/images/cbb_documento.png
+
+  fonts:
+    - family: AfacadFlux-Regular # Nombre de la fuente
+      fonts:
+        - asset: lib/assets/fonts/AfacadFlux-Regular.ttf
