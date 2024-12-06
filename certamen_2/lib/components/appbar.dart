@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -13,8 +15,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       toolbarHeight: 70.0,
       backgroundColor: Theme.of(context).primaryColor,
-      foregroundColor: Colors.white,
-      iconTheme: const IconThemeData(color: Colors.white),
+      foregroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black
+          : Colors.white,
+      iconTheme: IconThemeData(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.black
+              : Colors.white),
       leading: GestureDetector(
         onTap: () {
           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
@@ -26,12 +33,21 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             height: 50,
             width: 50,
             errorBuilder: (context, error, stackTrace) {
-              return Icon(Icons.error, color: Colors.white);
+              return Icon(Icons.error,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Colors.white);
             },
           ),
         ),
       ),
-      title: Text(title),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : Colors.white),
+      ),
     );
   }
 

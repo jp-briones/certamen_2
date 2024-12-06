@@ -15,6 +15,8 @@ dependencies:
   firebase_auth: ^5.3.3
   flutter_map: ^3.0.0
   latlong2: ^0.8.1
+  provider: ^6.1.2
+
 
 
 dev_dependencies:
@@ -30,6 +32,9 @@ flutter:
     - lib/assets/images/cbb_logo.png
     - lib/assets/images/fondo_home.jpg
     - lib/assets/images/cbb_documento.png
+    - lib/assets/images/miau.png
+    - lib/assets/images/ejecutivo.jpg
+
 
   fonts:
     - family: AfacadFlux-Regular # Nombre de la fuente

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, use_super_parameters, prefer_interpolation_to_compose_strings
+
 import 'package:flutter/material.dart';
 import 'package:certamen_2/components/bottom_navbar_component.dart';
 import 'package:certamen_2/components/appbar.dart';

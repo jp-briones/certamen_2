@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:certamen_2/components/bottom_navbar_component.dart';
 import 'package:certamen_2/components/appbar.dart';
@@ -35,7 +37,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DocumentImageScreen(),
+                    builder: (context) => DocumentImageScreen(
+                        documentNumber: documentNumber,
+                        formattedDate: formattedDate),
                   ),
                 );
               },
@@ -69,10 +73,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 }
 
 class DocumentImageScreen extends StatelessWidget {
+  final int documentNumber;
+  final String formattedDate;
+
+  const DocumentImageScreen(
+      {Key? key, required this.documentNumber, required this.formattedDate})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalle del Documento')),
+      appBar: AppBar(
+          title: Text(
+              'Detalle del Documento - factura $documentNumber $formattedDate')),
       body: Center(
         child: InteractiveViewer(
           child: Image.asset('lib/assets/images/cbb_documento.png'),

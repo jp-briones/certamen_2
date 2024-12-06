@@ -1,89 +1,99 @@
+// ignore_for_file: file_names, use_super_parameters, use_key_in_widget_constructors, no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:certamen_2/components/bottom_navbar_component.dart';
 import 'package:certamen_2/components/appbar.dart';
+import 'package:provider/provider.dart';
+import 'package:certamen_2/theme/theme_provider.dart';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _notificationsEnabled = true;
+
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    bool _darkMode = themeProvider.themeMode == ThemeMode.dark;
+
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Neohaus Las Condes'),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // TabBar for 'Todos', 'En proceso', 'Finalizados'
-            TabBar(
-              controller: _tabController,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Theme.of(context).primaryColor,
-              tabs: const [
-                Tab(text: 'Todos'),
-                Tab(text: 'En proceso'),
-                Tab(text: 'Finalizados'),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            // Display list of orders with detailed information
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Tab for 'Todos'
-                  _buildOrdersList(),
-                  // Tab for 'En proceso'
-                  _buildOrdersList(),
-                  // Tab for 'Finalizados'
-                  _buildOrdersList(),
-                ],
-              ),
-            ),
-            // Button to add a new order
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const NewOrderModal();
-                    },
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32.0, vertical: 12.0),
-                  ),
-                  child: const Text(
-                    'Nuevo Pedido',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: const CustomAppBar(title: 'Configuración'),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: 1, // Set the index for the 'Pedidos' tab
+        currentIndex: 4,
         onItemTapped: (index) => _onItemTapped(context, index),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Perfil'),
+            onTap: () {
+              Navigator.pushNamed(context, '/profile');
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Modo Oscuro'),
+            value: _darkMode,
+            onChanged: (bool value) {
+              themeProvider
+                  .setThemeMode(value ? ThemeMode.dark : ThemeMode.light);
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Notificaciones'),
+            value: _notificationsEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                _notificationsEnabled = value;
+              });
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.lock),
+            title: const Text('Privacidad'),
+            onTap: () {
+              Navigator.pushNamed(context, '/miau');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: const Text('Idioma'),
+            onTap: () {
+              Navigator.pushNamed(context, '/miau');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.help),
+            title: const Text('Ayuda y Soporte'),
+            onTap: () {
+              Navigator.pushNamed(context, '/miau');
+            },
+          ),
+        ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configuracion'),
-      ),
-      body: const Center(
-        child: Text(
-            'Pantalla de configuracion. Esta en proceso. Esta app la diseñe yo cuando estaba haciendo la practica en Cementos Bio Bio. Tuve que quitarle algunas pantallas (como el mapa interactivo) porque flutter a veces es muy mañoso con los problemas.'),
-      ),
-    );
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/orders');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/tracking');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/documents');
+        break;
+      case 3:
+        // Stay on the settings screen
+        break;
+    }
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:certamen_2/components/bottom_navbar_component.dart';
 import 'package:certamen_2/components/appbar.dart';

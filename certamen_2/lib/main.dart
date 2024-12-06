@@ -5,24 +5,33 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:certamen_2/screens/home.dart';
 import 'package:certamen_2/screens/register.dart';
 import 'package:certamen_2/screens/splashscreen.dart';
-import 'package:certamen_2/screens/sign.dart'; // Ruta correcta para el archivo sign.dart
-import 'package:certamen_2/screens/authuser.dart'; // Ruta correcta para el archivo authuser.dart
+import 'package:certamen_2/screens/sign.dart';
+import 'package:certamen_2/screens/authuser.dart';
 import 'package:certamen_2/theme/theme.dart';
-
+import 'package:provider/provider.dart';
+import 'package:certamen_2/theme/theme_provider.dart';
 import 'package:certamen_2/screens/OrdersScreen.dart';
 import 'package:certamen_2/screens/DocumentsScreen.dart';
 import 'package:certamen_2/screens/UserScreen.dart';
 import 'package:certamen_2/screens/SettingsScreen.dart';
 import 'package:certamen_2/screens/TrackingScreen.dart';
-
 import 'firebase_options.dart';
+import 'package:certamen_2/screens/profile_screen.dart';
+import 'package:certamen_2/screens/miau.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -30,26 +39,26 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      initialRoute: '/', // Ruta inicial
+      themeMode: themeProvider.themeMode,
+      initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(), // Ruta para el splash screen
-        '/home': (context) =>
-            const HomeScreen(), // Ruta para la pantalla principal
-        // '/sign': (context) =>
-        //     const SignInPage(), // Ruta para la pantalla de inicio de sesión
-        // '/register': (context) =>
-        //     const RegisterPage(), // Ruta para la pantalla de inicio de sesión
-        // '/authuser': (context) => const AuthUser(), // Ruta para AuthUser
+        '/': (context) => const SplashScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/sign': (context) => const SignInPage(),
+        '/register': (context) => const RegisterPage(),
+        '/authuser': (context) => const AuthUser(),
         '/user': (context) => const UserScreen(),
         '/orders': (context) => const OrdersScreen(),
         '/tracking': (context) => const TrackingScreen(),
-
         '/documents': (context) => const DocumentsScreen(),
         '/settings': (context) => const SettingsScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/miau': (context) => const MiauScreen(),
       },
     );
   }

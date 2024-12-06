@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -54,6 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
           errorMessage = 'Error: ${e.message}';
       }
       print("Error de FirebaseAuthException: $errorMessage");
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );

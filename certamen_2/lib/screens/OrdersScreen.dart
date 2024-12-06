@@ -1,10 +1,14 @@
+// ignore_for_file: file_names, library_private_types_in_public_api, unnecessary_cast
+
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:certamen_2/models/pedido.dart';
 import 'package:certamen_2/components/bottom_navbar_component.dart';
 import 'package:certamen_2/components/appbar.dart';
 import 'package:certamen_2/components/new_order_modal.dart';
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+  const OrdersScreen({Key? key}) : super(key: key);
 
   @override
   _OrdersScreenState createState() => _OrdersScreenState();
@@ -12,152 +16,30 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
-  // Sample list representing orders
-  List<Map<String, dynamic>> orders = [
-    {
-      'nota': '40548944',
-      'fecha': '06-02-2024 9:30',
-      'producto': 'G030(10)-20-12-28-B',
-      'cantidad': '22.5 m³',
-      'estado': 'Por Confirmar',
-      'expanded': false,
-      'detalles': {
-        'fechaProgramacion': '21-07-2021',
-        'volumen': '22.5 m³',
-        'bomba': 'No',
-        'muestra': 'No',
-        'guias': [
-          {
-            'numero': '40548944',
-            'fecha': '06-02-2024 9:30',
-            'producto': 'G030(10)-20-12-28-B',
-            'cantidad': '22.5 m³'
-          },
-          {
-            'numero': '2852446',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-          {
-            'numero': '2896658',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-        ]
-      }
-    },
-    {
-      'nota': '40548945',
-      'fecha': '03-02-2024 14:00',
-      'producto': 'G030(10)-20-12-28-B-HELI',
-      'cantidad': '30 m³',
-      'estado': 'Confirmado',
-      'expanded': false,
-      'detalles': {
-        'fechaProgramacion': '21-07-2021',
-        'volumen': '30 m³',
-        'bomba': 'No',
-        'muestra': 'No',
-        'guias': [
-          {
-            'numero': '40548945',
-            'fecha': '03-02-2024 14:00',
-            'producto': 'G030(10)-20-12-28-B-HELI',
-            'cantidad': '30 m³'
-          },
-          {
-            'numero': '2852446',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-          {
-            'numero': '2896658',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-        ]
-      }
-    },
-    {
-      'nota': '40548944',
-      'fecha': '02-02-2024 14:00',
-      'producto': 'G025(10)-20-12-28-B',
-      'cantidad': '3 m³',
-      'estado': 'Confirmado',
-      'expanded': false,
-      'detalles': {
-        'fechaProgramacion': '21-07-2021',
-        'volumen': '3 m³',
-        'bomba': 'No',
-        'muestra': 'No',
-        'guias': [
-          {
-            'numero': '40548944',
-            'fecha': '29-01-2024 13:15',
-            'producto': 'G030(10)-20-12-28-B-HELI',
-            'cantidad': '22 m³'
-          },
-          {
-            'numero': '2852446',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-          {
-            'numero': '2896658',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-        ]
-      }
-    },
-    {
-      'nota': '40548944',
-      'fecha': '12-01-2024 10:30',
-      'producto': 'G030(10)-20-12-28-B',
-      'cantidad': '50 m³',
-      'estado': 'Anulado',
-      'expanded': false,
-      'detalles': {
-        'fechaProgramacion': '21-07-2021',
-        'volumen': '50 m³',
-        'bomba': 'No',
-        'muestra': 'No',
-        'guias': [
-          {
-            'numero': '40548944',
-            'fecha': '12-01-2024 10:30',
-            'producto': 'G030(10)-20-12-28-B',
-            'cantidad': '50 m³'
-          },
-          {
-            'numero': '2852446',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-          {
-            'numero': '2896658',
-            'fecha': '24-08-2021 10:30',
-            'producto': 'SG30(10)-10-16-28-B',
-            'cantidad': '5 m³'
-          },
-        ]
-      }
-    },
-  ];
+  List<Pedido> orders = [];
 
   TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
+    fetchPedidos();
     _tabController = TabController(length: 3, vsync: this);
+  }
+
+  Future<void> fetchPedidos() async {
+    final pedidosCollection = FirebaseFirestore.instance.collection('pedidos');
+    try {
+      final snapshot = await pedidosCollection.get();
+      setState(() {
+        orders = snapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return Pedido.fromMap(doc.id, data);
+        }).toList();
+      });
+    } catch (e) {
+      debugPrint('Error al obtener los pedidos: $e');
+    }
   }
 
   @override
@@ -213,9 +95,11 @@ class _OrdersScreenState extends State<OrdersScreen>
                   // Tab for 'Todos'
                   _buildOrdersList(),
                   // Tab for 'En proceso'
-                  _buildOrdersList(),
+                  _buildOrdersList(
+                      filter: (pedido) => pedido.estado != 'Entregado'),
                   // Tab for 'Finalizados'
-                  _buildOrdersList(),
+                  _buildOrdersList(
+                      filter: (pedido) => pedido.estado == 'Entregado'),
                 ],
               ),
             ),
@@ -253,83 +137,74 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
   }
 
-  Widget _buildOrdersList() {
+  Widget _buildOrdersList({bool Function(Pedido)? filter}) {
+    final filteredOrders =
+        filter != null ? orders.where(filter).toList() : orders;
+
+    if (filteredOrders.isEmpty) {
+      return const Center(child: Text('No hay pedidos disponibles.'));
+    }
     return ListView.builder(
-      itemCount: orders.length,
+      itemCount: filteredOrders.length,
       itemBuilder: (context, index) {
+        final pedido = filteredOrders[index];
         return Card(
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 title: Text(
-                  'Nota de Venta: ${orders[index]['nota']}',
+                  'Nota de Venta: ${pedido.id}',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Fecha de Despacho: ${orders[index]['fecha']}'),
-                    Text('Producto: ${orders[index]['producto']}'),
-                    Text('Cantidad: ${orders[index]['cantidad']}'),
-                    Text('Estado: ${orders[index]['estado']}'),
+                    Text(
+                        'Fecha de Despacho: ${pedido.fecha.toLocal().toString().split(' ')[0]}'),
+                    Text('Producto: ${pedido.producto}'),
+                    Text('Cantidad: ${pedido.cantidad} m³'),
+                    Text('Estado: ${pedido.estado}'),
                   ],
                 ),
                 trailing: IconButton(
-                  icon: Icon(orders[index]['expanded']
-                      ? Icons.expand_less
-                      : Icons.expand_more),
+                  icon: Icon(
+                      pedido.expanded ? Icons.expand_less : Icons.expand_more),
                   onPressed: () {
                     setState(() {
-                      orders[index]['expanded'] = !orders[index]['expanded'];
+                      pedido.expanded = !pedido.expanded;
                     });
                   },
                 ),
               ),
-              if (orders[index]['expanded'])
+              if (pedido.expanded)
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 16.0, bottom: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Text(
+                      //     'Fecha de Despacho: ${pedido.fecha.toLocal().toString().split(' ')[0]}'),
                       Text(
-                          'Fecha de Programación: ${orders[index]['detalles']['fechaProgramacion']}'),
-                      Text('Volumen: ${orders[index]['detalles']['volumen']}'),
-                      Text('Bomba: ${orders[index]['detalles']['bomba']}'),
-                      Text('Muestra: ${orders[index]['detalles']['muestra']}'),
+                          'Hora de Despacho: ${TimeOfDay.fromDateTime(pedido.fecha.toLocal()).format(context)}'),
+
+                      // Text('Producto: ${pedido.producto}'),
+                      // Text('Cantidad: ${pedido.cantidad} m³'),
+                      // Text('Estado: ${pedido.estado}'),
                       const SizedBox(height: 10.0),
                       const Text(
                         'Detalles del Pedido',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: const [
-                            DataColumn(label: Text('Número de Guía')),
-                            DataColumn(label: Text('Fecha de Despacho')),
-                            DataColumn(label: Text('Producto')),
-                            DataColumn(label: Text('Cantidad')),
-                          ],
-                          rows: List<DataRow>.generate(
-                            orders[index]['detalles']['guias'].length,
-                            (i) => DataRow(
-                              cells: [
-                                DataCell(Text(orders[index]['detalles']['guias']
-                                    [i]['numero'])),
-                                DataCell(Text(orders[index]['detalles']['guias']
-                                    [i]['fecha'])),
-                                DataCell(Text(orders[index]['detalles']['guias']
-                                    [i]['producto'])),
-                                DataCell(Text(orders[index]['detalles']['guias']
-                                    [i]['cantidad'])),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
+                      Text('Bomba: ${pedido.bomba ? 'Sí' : 'No'}'),
+                      Text('Muestra: ${pedido.muestra ? 'Sí' : 'No'}'),
+                      Text('Dirección: ${pedido.direccion ?? 'No disponible'}'),
+                      Text(
+                          'Observaciones: ${pedido.observaciones ?? 'No disponible'}'),
                     ],
                   ),
                 ),

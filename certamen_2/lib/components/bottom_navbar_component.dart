@@ -1,3 +1,5 @@
+// ignore_for_file: use_super_parameters
+
 import 'package:flutter/material.dart';
 
 // A custom bottom navigation bar widget that allows for easy reuse across different screens.

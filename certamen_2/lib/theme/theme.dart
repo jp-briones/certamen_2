@@ -1,6 +1,5 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:certamen_2/theme/text_theme_extensions.dart';
 
 // // Define headline5 as part of the TextTheme to avoid errors in flutter_map
 // extension LegacyTextTheme on TextTheme {
